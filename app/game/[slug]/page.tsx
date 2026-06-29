@@ -1,11 +1,12 @@
 import Link from "next/link"
 import nesdb from "nes-db"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableScroll } from "@/ui/table"
 import { ChevronRightIcon } from "@radix-ui/react-icons"
 import { notFound } from "next/navigation"
+import { getGameBySlug, getGameSlug, parseGameSlug } from "@/utils/nesdb"
 
 export function generateStaticParams() {
-  return nesdb.games.map((game) => ({ slug: `${game.cartridge[0].crc}-${game.region}` }))
+  return nesdb.games.map((game) => ({ slug: getGameSlug(game) }))
 }
 
 type PageProps = {
@@ -14,16 +15,15 @@ type PageProps = {
 
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params
-  const [crc, region] = slug.split("-")
-  const game = nesdb.games.find((game) => game.cartridge[0].crc === crc && game.region === region)
+  const game = getGameBySlug(slug)
   if (!game) return {}
   return { title: game.name }
 }
 
 export default async function Game({ params }: PageProps) {
   const { slug } = await params
-  const [crc, region] = slug.split("-")
-  const game = nesdb.games.find((game) => game.cartridge[0].crc === crc && game.region === region)
+  const { crc, region } = parseGameSlug(slug)
+  const game = getGameBySlug(slug)
 
   if (!game) notFound()
 
@@ -34,7 +34,7 @@ export default async function Game({ params }: PageProps) {
         <ChevronRightIcon className="h-4 w-4" />
         <Link href={`/mapper/${game.cartridge[0].board.mapper}`}>mapper {game.cartridge[0].board.mapper}</Link>
         <ChevronRightIcon className="h-4 w-4" />
-        <Link href={`/game/${crc}-{region}`}>{game.name}</Link>
+        <Link href={`/game/${crc}-${region}`}>{game.name}</Link>
       </div>
       <h1 className="scroll-mt-24 text-4xl font-bold tracking-tight">
         {game.name}
@@ -155,47 +155,49 @@ export default async function Game({ params }: PageProps) {
                 )}
                 <TableRow>
                   <TableCell colSpan={2}>
-                    <Table className="ml-4 mt-2">
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead className="w-[100px]">Type</TableHead>
-                          <TableHead>Name</TableHead>
-                          <TableHead>Size</TableHead>
-                          <TableHead>CRC32</TableHead>
-                          <TableHead>SHA1</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {cartridge.board.chr && (
+                    <TableScroll className="mt-2">
+                      <Table className="min-w-[720px]">
+                        <TableHeader>
                           <TableRow>
-                            <TableCell>PRG+CHR</TableCell>
-                            <TableCell></TableCell>
-                            <TableCell></TableCell>
-                            <TableCell>{cartridge.crc}</TableCell>
-                            <TableCell>{cartridge.sha1}</TableCell>
+                            <TableHead className="w-[100px]">Type</TableHead>
+                            <TableHead>Name</TableHead>
+                            <TableHead>Size</TableHead>
+                            <TableHead>CRC32</TableHead>
+                            <TableHead>SHA1</TableHead>
                           </TableRow>
-                        )}
-                        {cartridge.board.prg.map((prg, i) => (
-                          <TableRow key={i}>
-                            <TableCell>PRG</TableCell>
-                            <TableCell>{prg.name}</TableCell>
-                            <TableCell>{prg.size}</TableCell>
-                            <TableCell>{prg.crc}</TableCell>
-                            <TableCell>{prg.sha1}</TableCell>
-                          </TableRow>
-                        ))}
-                        {cartridge.board.chr &&
-                          cartridge.board.chr.map((chr, i) => (
+                        </TableHeader>
+                        <TableBody>
+                          {cartridge.board.chr && (
+                            <TableRow>
+                              <TableCell>PRG+CHR</TableCell>
+                              <TableCell></TableCell>
+                              <TableCell></TableCell>
+                              <TableCell>{cartridge.crc}</TableCell>
+                              <TableCell>{cartridge.sha1}</TableCell>
+                            </TableRow>
+                          )}
+                          {cartridge.board.prg.map((prg, i) => (
                             <TableRow key={i}>
-                              <TableCell>CHR</TableCell>
-                              <TableCell>{chr.name}</TableCell>
-                              <TableCell>{chr.size}</TableCell>
-                              <TableCell>{chr.crc}</TableCell>
-                              <TableCell>{chr.sha1}</TableCell>
+                              <TableCell>PRG</TableCell>
+                              <TableCell>{prg.name}</TableCell>
+                              <TableCell>{prg.size}</TableCell>
+                              <TableCell>{prg.crc}</TableCell>
+                              <TableCell>{prg.sha1}</TableCell>
                             </TableRow>
                           ))}
-                      </TableBody>
-                    </Table>
+                          {cartridge.board.chr &&
+                            cartridge.board.chr.map((chr, i) => (
+                              <TableRow key={i}>
+                                <TableCell>CHR</TableCell>
+                                <TableCell>{chr.name}</TableCell>
+                                <TableCell>{chr.size}</TableCell>
+                                <TableCell>{chr.crc}</TableCell>
+                                <TableCell>{chr.sha1}</TableCell>
+                              </TableRow>
+                            ))}
+                        </TableBody>
+                      </Table>
+                    </TableScroll>
                   </TableCell>
                 </TableRow>
               </TableBody>
