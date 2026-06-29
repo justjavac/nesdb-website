@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableScroll } from "@/ui/table"
 import { ChevronRightIcon } from "@radix-ui/react-icons"
 import { getGameSlug, getGamesByMapper } from "@/utils/nesdb"
 
@@ -27,39 +27,41 @@ export default async function Mapper({ params }: PageProps) {
         <ChevronRightIcon className="h-4 w-4" />
         <Link href={`/mapper/${slug}`}>mapper {slug}</Link>
       </div>
-      <Table className="w-full">
-        <TableHeader>
-          <TableRow>
-            <TableHead>CRC32</TableHead>
-            <TableHead>Title</TableHead>
-            <TableHead>Title</TableHead>
-            <TableHead>Region</TableHead>
-            <TableHead>Catalog ID</TableHead>
-            <TableHead>Publisher</TableHead>
-            <TableHead>Board</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {games.map((game, i) => (
-            <TableRow key={i}>
-              <TableCell>{game.cartridge[0].crc}</TableCell>
-              <TableCell>
-                <Link
-                  href={`/game/${getGameSlug(game)}`}
-                  className="underline underline-offset-4 text-blue-400 hover:text-blue-600"
-                >
-                  {game.name}
-                </Link>
-              </TableCell>
-              <TableCell>{game.altname}</TableCell>
-              <TableCell>{game.region}</TableCell>
-              <TableCell>{game.catalog}</TableCell>
-              <TableCell>{game.publisher}</TableCell>
-              <TableCell>{game.cartridge[0].board.type}</TableCell>
+      <TableScroll>
+        <Table className="min-w-[800px]">
+          <TableHeader>
+            <TableRow>
+              <TableHead>CRC32</TableHead>
+              <TableHead>Title</TableHead>
+              <TableHead>Alt Title</TableHead>
+              <TableHead>Region</TableHead>
+              <TableHead>Catalog ID</TableHead>
+              <TableHead>Publisher</TableHead>
+              <TableHead>Board</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {games.map((game, i) => (
+              <TableRow key={i}>
+                <TableCell>{game.cartridge[0].crc}</TableCell>
+                <TableCell>
+                  <Link
+                    href={`/game/${getGameSlug(game)}`}
+                    className="underline underline-offset-4 text-blue-400 hover:text-blue-600"
+                  >
+                    {game.name}
+                  </Link>
+                </TableCell>
+                <TableCell>{game.altname}</TableCell>
+                <TableCell>{game.region}</TableCell>
+                <TableCell>{game.catalog}</TableCell>
+                <TableCell>{game.publisher}</TableCell>
+                <TableCell>{game.cartridge[0].board.type}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableScroll>
     </div>
   )
 }
