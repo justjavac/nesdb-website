@@ -3,9 +3,10 @@ import nesdb from "nes-db"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/ui/table"
 import { ChevronRightIcon } from "@radix-ui/react-icons"
 import { notFound } from "next/navigation"
+import { getGameBySlug, getGameSlug, parseGameSlug } from "@/utils/nesdb"
 
 export function generateStaticParams() {
-  return nesdb.games.map((game) => ({ slug: `${game.cartridge[0].crc}-${game.region}` }))
+  return nesdb.games.map((game) => ({ slug: getGameSlug(game) }))
 }
 
 type PageProps = {
@@ -14,16 +15,15 @@ type PageProps = {
 
 export async function generateMetadata({ params }: PageProps) {
   const { slug } = await params
-  const [crc, region] = slug.split("-")
-  const game = nesdb.games.find((game) => game.cartridge[0].crc === crc && game.region === region)
+  const game = getGameBySlug(slug)
   if (!game) return {}
   return { title: game.name }
 }
 
 export default async function Game({ params }: PageProps) {
   const { slug } = await params
-  const [crc, region] = slug.split("-")
-  const game = nesdb.games.find((game) => game.cartridge[0].crc === crc && game.region === region)
+  const { crc, region } = parseGameSlug(slug)
+  const game = getGameBySlug(slug)
 
   if (!game) notFound()
 
@@ -34,7 +34,7 @@ export default async function Game({ params }: PageProps) {
         <ChevronRightIcon className="h-4 w-4" />
         <Link href={`/mapper/${game.cartridge[0].board.mapper}`}>mapper {game.cartridge[0].board.mapper}</Link>
         <ChevronRightIcon className="h-4 w-4" />
-        <Link href={`/game/${crc}-{region}`}>{game.name}</Link>
+        <Link href={`/game/${crc}-${region}`}>{game.name}</Link>
       </div>
       <h1 className="scroll-mt-24 text-4xl font-bold tracking-tight">
         {game.name}
