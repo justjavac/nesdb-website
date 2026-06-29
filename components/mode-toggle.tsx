@@ -8,26 +8,23 @@ import { cn } from "@/utils"
 import { buttonVariants } from "@/ui/button"
 
 export function ModeToggle() {
-  const { setTheme } = useTheme()
+  const { resolvedTheme, setTheme } = useTheme()
 
   return (
-    <div
+    <button
+      type="button"
+      aria-label="Toggle theme"
+      onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
       className={cn(
         buttonVariants({
           variant: "ghost",
         }),
-        "w-9 px-0 cursor-pointer",
+        "relative w-9 px-0",
       )}
     >
-      <SunIcon
-        className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
-        onClick={() => setTheme("dark")}
-      />
-      <MoonIcon
-        className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
-        onClick={() => setTheme("light")}
-      />
+      <SunIcon className="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0" />
+      <MoonIcon className="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100" />
       <span className="sr-only">Toggle theme</span>
-    </div>
+    </button>
   )
 }
