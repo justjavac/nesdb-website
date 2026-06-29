@@ -8,14 +8,20 @@ export function generateStaticParams() {
   return nesdb.games.map((game) => ({ slug: `${game.cartridge[0].crc}-${game.region}` }))
 }
 
-export function generateMetadata({ params: { slug } }: { params: { slug: string } }) {
+type PageProps = {
+  params: Promise<{ slug: string }>
+}
+
+export async function generateMetadata({ params }: PageProps) {
+  const { slug } = await params
   const [crc, region] = slug.split("-")
   const game = nesdb.games.find((game) => game.cartridge[0].crc === crc && game.region === region)
   if (!game) return {}
   return { title: game.name }
 }
 
-export default function Game({ params: { slug } }: { params: { slug: string } }) {
+export default async function Game({ params }: PageProps) {
+  const { slug } = await params
   const [crc, region] = slug.split("-")
   const game = nesdb.games.find((game) => game.cartridge[0].crc === crc && game.region === region)
 

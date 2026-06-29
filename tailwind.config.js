@@ -1,7 +1,7 @@
-import type { Config } from "tailwindcss"
-import { fontFamily } from "tailwindcss/defaultTheme"
+const defaultTheme = require("tailwindcss/defaultTheme")
 
-const config: Config = {
+/** @type {import('tailwindcss').Config} */
+const config = {
   darkMode: "class",
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
@@ -60,7 +60,7 @@ const config: Config = {
         sm: "calc(var(--radius) - 4px)",
       },
       fontFamily: {
-        sans: ["var(--font-sans)", ...fontFamily.sans],
+        sans: ["var(--font-sans)", ...defaultTheme.fontFamily.sans],
       },
       keyframes: {
         "accordion-down": {
@@ -80,4 +80,4 @@ const config: Config = {
   },
 }
 
-export default config
+module.exports = config

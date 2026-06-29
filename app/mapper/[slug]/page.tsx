@@ -7,11 +7,17 @@ export function generateStaticParams() {
   return [...Array(256).keys()].map((_, i) => ({ slug: i.toString() }))
 }
 
-export function generateMetadata({ params: { slug } }: { params: { slug: string } }) {
+type PageProps = {
+  params: Promise<{ slug: string }>
+}
+
+export async function generateMetadata({ params }: PageProps) {
+  const { slug } = await params
   return { title: `Mapper ${slug}` }
 }
 
-export default function Mapper({ params: { slug } }: { params: { slug: string } }) {
+export default async function Mapper({ params }: PageProps) {
+  const { slug } = await params
   const games = nesdb.games.filter((game) => game.cartridge[0].board.mapper === Number(slug))
 
   return (
