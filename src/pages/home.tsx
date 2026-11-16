@@ -1,5 +1,6 @@
-import Link from "next/link"
+import { Link } from "react-router-dom"
 import nesdb from "nes-db"
+
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableScroll } from "@/ui/table"
 import { getGameSlug } from "@/utils/nesdb"
 
@@ -26,7 +27,7 @@ export default function Home() {
                 <TableCell>{game.cartridge[0].crc}</TableCell>
                 <TableCell>
                   <Link
-                    href={`/game/${getGameSlug(game)}`}
+                    to={`/game/${getGameSlug(game)}`}
                     className="underline underline-offset-4 text-blue-400 hover:text-blue-600"
                   >
                     {game.name}
@@ -39,7 +40,7 @@ export default function Home() {
                 <TableCell>{game.cartridge[0].board.type}</TableCell>
                 <TableCell>
                   <Link
-                    href={`/mapper/${game.cartridge[0].board.mapper}`}
+                    to={`/mapper/${game.cartridge[0].board.mapper}`}
                     className="underline underline-offset-4 text-blue-400 hover:text-blue-600"
                   >
                     {game.cartridge[0].board.mapper}

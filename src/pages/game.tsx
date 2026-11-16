@@ -1,40 +1,28 @@
-import Link from "next/link"
-import nesdb from "nes-db"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableScroll } from "@/ui/table"
 import { ChevronRightIcon } from "@radix-ui/react-icons"
-import { notFound } from "next/navigation"
-import { getGameBySlug, getGameSlug, parseGameSlug } from "@/utils/nesdb"
+import { Link, useParams } from "react-router-dom"
 
-export function generateStaticParams() {
-  return nesdb.games.map((game) => ({ slug: getGameSlug(game) }))
-}
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow, TableScroll } from "@/ui/table"
+import { getGameBySlug, parseGameSlug } from "@/utils/nesdb"
 
-type PageProps = {
-  params: Promise<{ slug: string }>
-}
+import NotFound from "./not-found"
 
-export async function generateMetadata({ params }: PageProps) {
-  const { slug } = await params
-  const game = getGameBySlug(slug)
-  if (!game) return {}
-  return { title: game.name }
-}
-
-export default async function Game({ params }: PageProps) {
-  const { slug } = await params
+export default function Game() {
+  const { slug = "" } = useParams()
   const { crc, region } = parseGameSlug(slug)
   const game = getGameBySlug(slug)
 
-  if (!game) notFound()
+  if (!game) {
+    return <NotFound />
+  }
 
   return (
     <div className="my-3 md:my-4">
       <div className="mb-4 flex items-center space-x-1 text-sm text-muted-foreground">
-        <Link href="/">Home</Link>
+        <Link to="/">Home</Link>
         <ChevronRightIcon className="h-4 w-4" />
-        <Link href={`/mapper/${game.cartridge[0].board.mapper}`}>mapper {game.cartridge[0].board.mapper}</Link>
+        <Link to={`/mapper/${game.cartridge[0].board.mapper}`}>mapper {game.cartridge[0].board.mapper}</Link>
         <ChevronRightIcon className="h-4 w-4" />
-        <Link href={`/game/${crc}-${region}`}>{game.name}</Link>
+        <Link to={`/game/${crc}-${region}`}>{game.name}</Link>
       </div>
       <h1 className="scroll-mt-24 text-4xl font-bold tracking-tight">
         {game.name}
@@ -103,7 +91,7 @@ export default async function Game({ params }: PageProps) {
                   <TableCell>Mapper</TableCell>
                   <TableCell>
                     <Link
-                      href={`/mapper/${cartridge.board.mapper}`}
+                      to={`/mapper/${cartridge.board.mapper}`}
                       className="underline underline-offset-4 text-blue-400 hover:text-blue-600"
                     >
                       {cartridge.board.mapper}
